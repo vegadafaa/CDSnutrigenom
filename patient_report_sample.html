@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Precision Nutrigenomics Report | Arthur Pendelton</title>
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --border: #e2e8f0;
+      --badge-high: #fef2f2;
+      --badge-high-text: #991b1b;
+      --badge-mod: #fffbeb;
+      --badge-mod-text: #92400e;
+      --badge-opt: #f0fdf4;
+      --badge-opt-text: #166534;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07);
+      padding: 3rem;
+    }
+
+    /* Print styling */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .container { border: none; box-shadow: none; padding: 0; max-width: 100%; }
+      .no-print { display: none !important; }
+      .page-break { page-break-before: always; }
+    }
+
+    /* Header */
+    .report-header {
+      border-bottom: 2px solid var(--primary);
+      padding-bottom: 1.5rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo-badge {
+      display: inline-block;
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 9999px;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .report-title {
+      font-size: 1.85rem;
+      color: var(--text-main);
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .patient-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.4rem 2rem;
+      font-size: 0.9rem;
+      background: #f1f5f9;
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: 2.25rem;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Traffic-Light Domain Cards */
+    .scorecards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1rem;
+    }
+
+    .scorecard {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.2rem;
+      background: #fff;
+    }
+
+    .scorecard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 9999px;
+      text-transform: uppercase;
+    }
+
+    .badge-priority { background: var(--badge-high); color: var(--badge-high-text); border: 1px solid #fecaca; }
+    .badge-moderate { background: var(--badge-mod); color: var(--badge-mod-text); border: 1px solid #fde68a; }
+    .badge-optimal { background: var(--badge-opt); color: var(--badge-opt-text); border: 1px solid #bbf7d0; }
+
+    /* Macro Boxes */
+    .macro-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-top: 0.75rem;
+    }
+
+    .macro-tile {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .macro-tile .num {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .macro-tile .label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .macro-tile .desc {
+      font-size: 0.75rem;
+      color: var(--text-main);
+      margin-top: 0.25rem;
+    }
+
+    /* Food columns */
+    .food-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .food-box {
+      border-radius: 8px;
+      padding: 1.25rem;
+      border: 1px solid;
+    }
+
+    .food-box-prioritize {
+      background: #f0fdf4;
+      border-color: #bbf7d0;
+    }
+
+    .food-box-prioritize h4 { color: #166534; margin-bottom: 0.75rem; }
+
+    .food-box-avoid {
+      background: #fef2f2;
+      border-color: #fecaca;
+    }
+
+    .food-box-avoid h4 { color: #991b1b; margin-bottom: 0.75rem; }
+
+    .food-box ul { list-style: none; }
+    .food-box li {
+      margin-bottom: 0.65rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px dashed rgba(0,0,0,0.08);
+      font-size: 0.9rem;
+    }
+
+    .food-sub {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    /* Meals */
+    .meal-timeline {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .meal-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .meal-card .time {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      text-transform: uppercase;
+    }
+
+    .meal-card .name {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin: 0.25rem 0;
+    }
+
+    .meal-card .ingredients {
+      font-size: 0.85rem;
+      color: var(--text-main);
+    }
+
+    /* Supplements */
+    .supplement-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .sup-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      background: #fff;
+    }
+
+    .sup-card-head {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.4rem;
+    }
+
+    .sup-card-head strong { color: var(--primary-dark); font-size: 0.95rem; }
+    .sup-card-head span { font-size: 0.75rem; background: #e2e8f0; padding: 0.1rem 0.4rem; border-radius: 4px; }
+
+    .sup-desc { font-size: 0.85rem; margin-bottom: 0.4rem; }
+    .sup-why { font-size: 0.8rem; color: var(--text-muted); }
+
+    /* Action bar */
+    .action-bar {
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn:hover { background: var(--primary-dark); }
+    .btn-outline { background: #fff; color: var(--text-main); border: 1px solid var(--border); }
+    .btn-outline:hover { background: #f1f5f9; }
+  </style>
+</head>
+<body>
+
+  <div class="action-bar no-print" style="max-width: 900px; margin: 0 auto 1rem auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+    <a href="index.html" class="btn btn-outline">&larr; Back to Clinical CDS Dashboard</a>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="Arthur_Pendelton_Nutrigenomic_Patient_Report.docx" download class="btn" style="background: #2563eb;" title="Download native Microsoft Word version of this report">
+        <span>&#128196;</span> Download Word (.docx)
+      </a>
+      <button onclick="window.print()" class="btn">
+        <span>&#128438;</span> Print or Save as PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+    
+    <!-- Header -->
+    <header class="report-header">
+      <div>
+        <span class="logo-badge">NutriGen-CDS Precision Medicine</span>
+        <h1 class="report-title">Your Personal Nutrigenomic Health Blueprint</h1>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;">
+          Genetically-tailored nutrition, metabolism optimization, and dietary prescription.
+        </p>
+      </div>
+
+      <div class="patient-meta-grid" style="width: 100%;">
+        <div><strong>Patient Name:</strong> Arthur Pendelton</div>
+        <div><strong>Patient ID:</strong> PT-10492</div>
+        <div><strong>Evaluation Date:</strong> October 2, 2026</div>
+        <div><strong>Primary Goal:</strong> Cardiovascular Longevity & Energy</div>
+        <div><strong>Age / Gender:</strong> 54 y.o. | Male</div>
+        <div><strong>Body Mass Index (BMI):</strong> 28.1 kg/m²</div>
+      </div>
+    </header>
+
+    <!-- SECTION 1: WHAT YOUR DNA MEANS -->
+    <section class="section">
+      <h2 class="section-title">&#128161; 1. Executive Summary: What Your DNA Tells Us</h2>
+      <p style="font-size: 0.95rem; margin-bottom: 1rem;">
+        Your genetic test identified <strong>key variations in how your body converts vitamins, manages dietary fats, and regulates post-meal fullness</strong>. By aligning your daily food and supplements with your genetic blueprint, you can proactively address metabolic bottlenecks and optimize energy and cellular protection:
+      </p>
+
+      <div class="scorecards-grid">
+        <div class="scorecard">
+          <div class="scorecard-header">
+            <strong>Cellular Methylation</strong>
+            <span class="badge badge-priority">High Priority</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-main);">
+            <strong>MTHFR C677T (TT):</strong> Your enzyme runs at ~30-35% standard capacity. Your body has difficulty activating synthetic folic acid and clearing homocysteine. Requires natural food folates and active <strong>L-5-MTHF</strong>.
+          </p>
+        </div>
+
+        <div class="scorecard">
+          <div class="scorecard-header">
+            <strong>Heart & Fat Processing</strong>
+            <span class="badge badge-priority">High Priority</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-main);">
+            <strong>APOE4 Carrier (CT):</strong> Highly sensitive to dietary saturated fats (butter, coconut, red meat), which elevate atherogenic LDL particles. Highly responsive to extra virgin olive oil and Mediterranean dietary fat.
+          </p>
+        </div>
+
+        <div class="scorecard">
+          <div class="scorecard-header">
+            <strong>Satiety & Glucose</strong>
+            <span class="badge badge-moderate">Moderate Attention</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-main);">
+            <strong>FTO (AA) + TCF7L2 (CT):</strong> Satiety signaling (ghrelin) is blunted after meals, and insulin response is sensitive to high sugar/flours. You thrive on a <strong>higher-protein (25-30%)</strong>, lower-glycemic diet.
+          </p>
+        </div>
+
+        <div class="scorecard">
+          <div class="scorecard-header">
+            <strong>Caffeine & Energy</strong>
+            <span class="badge badge-moderate">Moderate Attention</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-main);">
+            <strong>CYP1A2 (*1F Slow):</strong> Your liver clears caffeine slowly. Drinking >2 cups/day keeps caffeine in your bloodstream for 12+ hours, raising blood pressure and disturbing restorative sleep.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: MACRONUTRIENT TARGETS -->
+    <section class="section">
+      <h2 class="section-title">&#9878; 2. Your Daily Nutritional Blueprint</h2>
+      <p style="font-size: 0.95rem;">
+        Based on your FTO, TCF7L2, and APOE4 genetics and your current BMI (28.1), here is your target daily balance:
+      </p>
+
+      <div class="macro-strip">
+        <div class="macro-tile">
+          <div class="num">1,850</div>
+          <div class="label">Daily Calories</div>
+          <div class="desc">Gentle deficit for metabolic rejuvenation</div>
+        </div>
+        <div class="macro-tile">
+          <div class="num">160g</div>
+          <div class="label">Carbs (35%)</div>
+          <div class="desc">Low-glycemic: lentils, berries, vegetables</div>
+        </div>
+        <div class="macro-tile">
+          <div class="num">130g</div>
+          <div class="label">Protein (28%)</div>
+          <div class="desc">1.4-1.5g/kg to stimulate satiety peptides</div>
+        </div>
+        <div class="macro-tile">
+          <div class="num">75g</div>
+          <div class="label">Healthy Fats (37%)</div>
+          <div class="desc">Saturated fat capped at &lt;6% (12g/d)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 3: SAMPLE MEAL BLUEPRINT -->
+    <section class="section">
+      <h2 class="section-title">&#127829; 3. A Day on Your Plate: Sample Precision Meal Plan</h2>
+      <div class="meal-timeline">
+        <div class="meal-card">
+          <div class="time">&#127749; Breakfast (8:00 AM)</div>
+          <div class="name">Spinach & Pasture Eggs Sauté</div>
+          <div class="ingredients">
+            2 eggs scrambled with 2 cups baby spinach (folate/choline), 1/4 sliced avocado, 1 slice sprouted Ezekiel bread, and 1 cup green tea.
+          </div>
+        </div>
+        <div class="meal-card">
+          <div class="time">&#127774; Lunch (12:30 PM)</div>
+          <div class="name">Mediterranean Salmon Salad</div>
+          <div class="ingredients">
+            5 oz wild Alaskan salmon, mixed arugula and romaine, cucumbers, walnuts, dressed generously with 1.5 tbsp extra virgin olive oil and lemon.
+          </div>
+        </div>
+        <div class="meal-card">
+          <div class="time">&#127822; Afternoon Snack (4:00 PM)</div>
+          <div class="name">Metabolic Power Snack</div>
+          <div class="ingredients">
+            Handful of raw pumpkin seeds (magnesium rich) with 1/2 cup fresh wild blueberries and herbal mint tea.
+          </div>
+        </div>
+        <div class="meal-card">
+          <div class="time">&#127769; Dinner (7:00 PM)</div>
+          <div class="name">Herb Chicken & Brassica Bowl</div>
+          <div class="ingredients">
+            6 oz grilled chicken breast roasted with rosemary and garlic, alongside steamed broccoli florets (sulforaphane) and 1/2 roasted sweet potato.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 4: FOOD SWAPS -->
+    <section class="section">
+      <h2 class="section-title">&#128722; 4. Kitchen & Grocery "Swap This for That" Guide</h2>
+      <div class="food-grid">
+        <div class="food-box food-box-prioritize">
+          <h4>&#9989; Stock Your Kitchen With (Prioritize):</h4>
+          <ul>
+            <li>
+              <strong>Extra Virgin Olive Oil (EVOO) & Avocado:</strong>
+              <div class="food-sub">Provides MUFAs to protect LDL receptors in APOE4 carriers.</div>
+            </li>
+            <li>
+              <strong>Dark Leafy Greens (Spinach, Romaine, Arugula):</strong>
+              <div class="food-sub">Rich in natural food folates to bypass MTHFR enzyme block.</div>
+            </li>
+            <li>
+              <strong>Wild-Caught Fatty Fish (Salmon, Sardines):</strong>
+              <div class="food-sub">Provides preformed marine EPA/DHA for brain and heart.</div>
+            </li>
+            <li>
+              <strong>Cruciferous Vegetables (Broccoli, Brussels Sprouts):</strong>
+              <div class="food-sub">Contains sulforaphane to stimulate Phase II GSTP1 detoxification.</div>
+            </li>
+            <li>
+              <strong>Herbal & Green Teas:</strong>
+              <div class="food-sub">Provides polyphenols without the caffeine surge of cold brews.</div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="food-box food-box-avoid">
+          <h4>&#10060; Leave on the Shelf (Minimize / Avoid):</h4>
+          <ul>
+            <li>
+              <strong>Butter, Ghee, Coconut Oil, & Heavy Cream:</strong>
+              <div class="food-sub">High saturated fat spikes atherogenic ApoB/LDL particles in APOE4.</div>
+            </li>
+            <li>
+              <strong>Synthetic Folic Acid Fortified Flours & Drinks:</strong>
+              <div class="food-sub">Accumulates as unmetabolized folic acid in MTHFR TT genotype.</div>
+            </li>
+            <li>
+              <strong>Afternoon Drip Coffee & Energy Drinks:</strong>
+              <div class="food-sub">Slow caffeine clearance raises arterial blood pressure.</div>
+            </li>
+            <li>
+              <strong>Refined Sugars & White Flour Pastries:</strong>
+              <div class="food-sub">Triggers sharp glycemic spikes due to TCF7L2 incretin blunting.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 5: SUPPLEMENT ROUTINE -->
+    <section class="section">
+      <h2 class="section-title">&#128138; 5. Your Daily Precision Supplement Schedule</h2>
+      <p style="font-size: 0.95rem;">
+        Standard drugstore vitamins often use inactive forms that your enzymes cannot convert. These targeted formulations bypass your genetic bottlenecks:
+      </p>
+
+      <div class="supplement-grid">
+        <div class="sup-card">
+          <div class="sup-card-head">
+            <strong>Active Methylfolate (L-5-MTHF)</strong>
+            <span>With Breakfast</span>
+          </div>
+          <div class="sup-desc"><strong>Dose:</strong> 800 - 1000 mcg daily (Quatrefolic form)</div>
+          <div class="sup-why">Bypasses the MTHFR enzyme block to lower elevated homocysteine and support DNA repair.</div>
+        </div>
+
+        <div class="sup-card">
+          <div class="sup-card-head">
+            <strong>Active Vitamin B12 (Methyl-B12)</strong>
+            <span>With Breakfast</span>
+          </div>
+          <div class="sup-desc"><strong>Dose:</strong> 1,000 mcg sublingual daily</div>
+          <div class="sup-why">Counters Metformin-induced B12 malabsorption and works synergistically with folate.</div>
+        </div>
+
+        <div class="sup-card">
+          <div class="sup-card-head">
+            <strong>Vitamin D3 + K2 (MK-7)</strong>
+            <span>With Breakfast</span>
+          </div>
+          <div class="sup-desc"><strong>Dose:</strong> 4,000 IU D3 + 100 mcg K2 MK-7</div>
+          <div class="sup-why">Overcomes reduced VDR receptor affinity to elevate 25(OH)D to optimal 50-70 ng/mL range.</div>
+        </div>
+
+        <div class="sup-card">
+          <div class="sup-card-head">
+            <strong>Pharmaceutical Omega-3 (EPA/DHA)</strong>
+            <span>With Dinner</span>
+          </div>
+          <div class="sup-desc"><strong>Dose:</strong> 1,500 - 2,000 mg combined EPA+DHA</div>
+          <div class="sup-why">Provides direct cardiovascular and endothelial protection for your APOE4 carrier status.</div>
+        </div>
+
+        <div class="sup-card">
+          <div class="sup-card-head">
+            <strong>Ubiquinol (Active CoQ10)</strong>
+            <span>With Breakfast</span>
+          </div>
+          <div class="sup-desc"><strong>Dose:</strong> 100 - 200 mg daily</div>
+          <div class="sup-why">Replenishes muscle mitochondrial CoQ10 depleted by your daily Atorvastatin therapy.</div>
+        </div>
+
+        <div class="sup-card">
+          <div class="sup-card-head">
+            <strong>Magnesium Bisglycinate</strong>
+            <span>1 hr before bed</span>
+          </div>
+          <div class="sup-desc"><strong>Dose:</strong> 300 - 400 mg elemental</div>
+          <div class="sup-why">Supports restful sleep, healthy vascular tone, and enzyme function.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 6: LAB MONITORING -->
+    <section class="section" style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;">
+      <h2 class="section-title" style="border: none; padding: 0;">&#128197; 6. Laboratory Checklist for Your Doctor (in 10-12 Weeks)</h2>
+      <p style="font-size: 0.95rem; margin-bottom: 1rem;">
+        Take this checklist to your primary physician or lab to evaluate your progress and verify that your nutrient therapy is working:
+      </p>
+      <ul style="margin-left: 1.5rem; font-size: 0.9rem; line-height: 1.7;">
+        <li><strong>Plasma Homocysteine:</strong> Baseline was 17.8 &micro;mol/L. Target goal is <strong>&lt; 9.0 &micro;mol/L</strong>.</li>
+        <li><strong>Serum 25-Hydroxyvitamin D [25(OH)D]:</strong> Baseline was 22.4 ng/mL. Target goal is <strong>50 - 70 ng/mL</strong>.</li>
+        <li><strong>Complete Lipid Profile + ApoB:</strong> Monitor LDL-C and ApoB response to dietary saturated fat restriction.</li>
+        <li><strong>Serum Vitamin B12 & Methylmalonic Acid (MMA):</strong> Verify adequate repletion while on Metformin.</li>
+        <li><strong>Fasting Blood Glucose & HbA1c:</strong> Assess glycemic control on the higher-protein, low-glycemic plan.</li>
+      </ul>
+    </section>
+
+    <footer style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1rem; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
+      This personalized report is generated by NutriGen-CDS for Arthur Pendelton. Consult your physician or registered dietitian before initiating new high-dose supplement regimens.
+    </footer>
+
+  </div>
+
+</body>
+</html>

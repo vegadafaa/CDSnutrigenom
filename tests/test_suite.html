@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriGen-CDS | Automated Test Runner</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      padding: 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .header {
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .summary-card {
+      background: #ffffff;
+      padding: 1.5rem;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+    .stat-val {
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+    .stat-pass { color: #16a34a; }
+    .stat-fail { color: #dc2626; }
+    .test-item {
+      background: #ffffff;
+      padding: 0.75rem 1rem;
+      margin-bottom: 0.5rem;
+      border-radius: 6px;
+      border-left: 4px solid #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .test-item.pass {
+      border-left-color: #16a34a;
+      background: #f0fdf4;
+    }
+    .test-item.fail {
+      border-left-color: #dc2626;
+      background: #fef2f2;
+    }
+    .badge {
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+    .badge-pass { background: #dcfce7; color: #166534; }
+    .badge-fail { background: #fee2e2; color: #991b1b; }
+    .btn {
+      background: #0284c7;
+      color: #ffffff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>NutriGen-CDS Automated Test Suite</h1>
+    <p style="color: #64748b;">Verification of Ingestion Parsers, Clinical Rule Engine, Safety Contraindications, and HL7 FHIR Exporter.</p>
+  </div>
+
+  <div style="margin-bottom: 1rem;">
+    <button class="btn" onclick="runTests()">Re-Run All Tests</button>
+    <a href="../index.html" style="margin-left: 1rem; color: #0284c7; text-decoration: none; font-weight: 600;">&larr; Back to CDS Dashboard</a>
+  </div>
+
+  <div id="summaryCard" class="summary-card">
+    <div>
+      <div id="statTotal" class="stat-val">-</div>
+      <div>Total Tests</div>
+    </div>
+    <div>
+      <div id="statPassed" class="stat-val stat-pass">-</div>
+      <div>Passed</div>
+    </div>
+    <div>
+      <div id="statFailed" class="stat-val stat-fail">-</div>
+      <div>Failed</div>
+    </div>
+  </div>
+
+  <div id="testResultsList"></div>
+
+  <!-- Load dependencies -->
+  <script src="../js/data/knowledge_base.js"></script>
+  <script src="../js/data/drug_interactions.js"></script>
+  <script src="../js/data/sample_patients.js"></script>
+  <script src="../js/engine/parsers.js"></script>
+  <script src="../js/engine/concordance.js"></script>
+  <script src="../js/engine/rule_engine.js"></script>
+  <script src="../js/engine/fhir_exporter.js"></script>
+  <script src="cds_tests.js"></script>
+
+  <script>
+    function runTests() {
+      const summary = CDSTestSuite.runAll();
+      document.getElementById("statTotal").innerText = summary.total;
+      document.getElementById("statPassed").innerText = summary.passed;
+      document.getElementById("statFailed").innerText = summary.failed;
+
+      const list = document.getElementById("testResultsList");
+      list.innerHTML = summary.results.map(r => `
+        <div class="test-item ${r.passed ? 'pass' : 'fail'}">
+          <span>${r.name}</span>
+          <span class="badge ${r.passed ? 'badge-pass' : 'badge-fail'}">${r.passed ? 'PASSED' : 'FAILED'}</span>
+        </div>
+      `).join('');
+    }
+
+    document.addEventListener("DOMContentLoaded", runTests);
+  </script>
+</body>
+</html>

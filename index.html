@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NutriGen-CDS | Clinical Decision Support for Nutrigenomics</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22%200%20100%20100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+  <!-- Login Overlay -->
+  <div id="loginOverlay" class="login-overlay">
+    <div class="login-card">
+      <div class="brand-wrapper" style="justify-content: center; margin-bottom: 1.5rem;">
+        <div class="brand-icon">&#129516;</div>
+        <div>
+          <div class="brand-title">NutriGen-<span>CDS</span></div>
+          <div class="brand-subtitle" style="font-size:0.75rem;">Clinical Decision Support</div>
+        </div>
+      </div>
+
+      <!-- Backend Login -->
+      <div class="form-group">
+        <label for="username">Username:</label>
+        <input type="text" id="username" class="form-control" placeholder="e.g. dr_vega / lab_staff_1 / patient_arthur">
+      </div>
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" class="form-control" placeholder="password123">
+      </div>
+
+      <div id="loginError" style="display:none; padding:0.75rem 1rem; border-radius:8px; font-size:0.82rem; margin-bottom:0.75rem; line-height:1.5;"></div>
+
+      <button id="btnLogin" class="btn btn-primary" style="width:100%; margin-bottom: 1rem;" onclick="App.handleLogin()">
+        &#128274; Login dengan Backend
+      </button>
+
+      <!-- Divider -->
+      <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
+        <hr style="flex:1; border-color:var(--border-color);">
+        <span style="font-size:0.75rem; color:var(--text-muted);">atau tanpa server</span>
+        <hr style="flex:1; border-color:var(--border-color);">
+      </div>
+
+      <!-- Demo Mode -->
+      <div class="form-group" style="margin-bottom:0.75rem;">
+        <label for="userRole" style="font-size:0.82rem; color:var(--text-muted);">Pilih Role Demo:</label>
+        <select id="userRole" class="form-control">
+          <option value="physician">&#128104;&#8205;&#9877;&#65039; Physician / Clinician</option>
+          <option value="lab">&#128300; Laboratory User</option>
+          <option value="patient">&#128100; Patient Portal</option>
+        </select>
+      </div>
+      <button class="btn btn-secondary" style="width:100%;" onclick="App.loginDemoMode()">
+        &#128295; Masuk Demo Mode (Offline)
+      </button>
+    </div>
+  </div>
+
+  <!-- Top Application Header -->
+  <header class="app-header">
+    <div class="brand-wrapper">
+      <div class="brand-icon">&#129516;</div>
+      <div>
+        <div class="brand-title">NutriGen-<span>CDS</span></div>
+        <div class="brand-subtitle">Clinical Decision Support for Evidence-Based Precision Nutrigenomics</div>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <div class="header-patient-picker">
+        <label for="patientSelector">Select Patient Persona:</label>
+        <select id="patientSelector" class="select-patient"></select>
+      </div>
+
+      <button id="btnPrintReport" class="btn btn-secondary btn-sm" title="Print clinical consultation report">
+        <span>&#128438;</span> Print / PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tabs-nav no-print" aria-label="Main Navigation">
+    <button class="tab-btn active" data-tab="tab-intake">
+      <span>&#128100;</span> Intake & Ingestion
+    </button>
+    <button class="tab-btn" data-tab="tab-lab" style="display: none;" id="navLabTab">
+      <span>&#129529;</span> Lab Tracking & Workflow
+    </button>
+    <button class="tab-btn" data-tab="tab-risk">
+      <span>&#127919;</span> Metabolic Risk Matrix
+    </button>
+    <button class="tab-btn" data-tab="tab-nutrition">
+      <span>&#127822;</span> Precision Nutrition Rx
+    </button>
+    <button class="tab-btn" data-tab="tab-safety">
+      <span>&#9888;</span> Safety & Depletions
+      <span id="safetyTabBadge" class="tab-count badge-high" style="display: none;">0</span>
+    </button>
+    <button class="tab-btn" data-tab="tab-reports">
+      <span>&#128221;</span> Clinical Documentation (SOAP)
+    </button>
+    <button class="tab-btn" data-tab="tab-fhir">
+      <span>&#9877;</span> HL7 FHIR Interoperability
+    </button>
+    <button class="tab-btn" data-tab="tab-kb">
+      <span>&#128218;</span> Evidence Knowledge Base
+    </button>
+  </nav>
+
+  <!-- Main Content Container -->
+  <main class="main-content">
+    
+    <!-- Dynamic Patient Vitals Strip -->
+    <div id="patientVitalsBar" class="patient-overview-bar"></div>
+
+    <!-- TAB: LAB WORKFLOW & TRACKING -->
+    <section id="tab-lab" class="tab-pane">
+
+      <!-- LAB STATS BAR -->
+      <div id="labStatsBar" class="lab-stats-bar"></div>
+
+      <div class="grid-2" style="align-items: start;">
+
+        <!-- LEFT COLUMN: Sample List -->
+        <div>
+          <!-- Add New Sample -->
+          <div class="card" style="margin-bottom: 1rem;">
+            <div class="card-header">
+              <h2 class="card-title">&#129514; Tambah Sampel Baru</h2>
+              <span class="badge badge-fhir">Lab Accession</span>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+              <div class="form-group" style="margin: 0;">
+                <label style="font-size:0.82rem;">ID Pasien</label>
+                <select id="labNewSamplePatient" class="form-control">
+                  <!-- filled by JS -->
+                </select>
+              </div>
+              <div class="form-group" style="margin: 0;">
+                <label style="font-size:0.82rem;">Tipe Sampel</label>
+                <select id="labNewSampleType" class="form-control">
+                  <option value="Blood Plasma">Blood Plasma</option>
+                  <option value="Blood Serum">Blood Serum</option>
+                  <option value="Saliva / Buccal">Saliva / Buccal</option>
+                  <option value="Urine">Urine</option>
+                  <option value="Whole Blood (EDTA)">Whole Blood (EDTA)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+              <label style="font-size:0.82rem;">Catatan / Instruksi Khusus</label>
+              <input type="text" id="labNewSampleNotes" class="form-control" placeholder="e.g. Puasa 8 jam, hindari antikoagulan">
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="App.addLabSample()" style="width: 100%;">
+              &#43; Daftarkan Sampel Baru
+            </button>
+            <div id="labAddSampleStatus" style="margin-top: 0.5rem; font-size: 0.8rem; text-align:center;"></div>
+          </div>
+
+          <!-- Sample Processing Table -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">&#129529; Daftar Sampel Aktif</h2>
+              <div style="display:flex; gap: 0.5rem; align-items: center;">
+                <input type="text" id="labSampleSearch" class="form-control" placeholder="Cari ID / Pasien..." style="font-size:0.8rem; padding: 0.3rem 0.6rem; width: 160px;" oninput="App.renderLabWorkflow()">
+                <select id="labStatusFilter" class="form-control" style="font-size:0.8rem; padding: 0.3rem 0.6rem; width: auto;" onchange="App.renderLabWorkflow()">
+                  <option value="">Semua Status</option>
+                  <option value="Received">Received</option>
+                  <option value="Processing">Processing</option>
+                  <option value="Analyzing">Analyzing</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="clinical-table">
+                <thead>
+                  <tr>
+                    <th>Sample ID</th>
+                    <th>Pasien</th>
+                    <th>Tipe</th>
+                    <th>Diterima</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="labWorkflowTableBody"><!-- Rendered dynamically --></tbody>
+              </table>
+            </div>
+            <div id="labGlobalStatusMessage" style="margin-top: 0.75rem; font-size: 0.82rem; text-align: center;"></div>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Result Entry Panel -->
+        <div>
+
+          <!-- Manual Biomarker Entry -->
+          <div class="card" style="margin-bottom: 1rem;">
+            <div class="card-header">
+              <h2 class="card-title">&#9998; Input Hasil Biomarker</h2>
+              <span class="badge badge-optimal">Manual Entry</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom: 0.75rem;">
+              Masukkan hasil lab secara manual untuk sampel yang sudah selesai dianalisis.
+            </p>
+            <div class="form-group">
+              <label style="font-size:0.82rem;">Pilih Sampel (Status: Completed)</label>
+              <select id="labResultTargetSample" class="form-control">
+                <option value="">— Pilih Sampel Completed —</option>
+              </select>
+            </div>
+
+            <div id="labBiomarkerFields" style="display: grid; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <!-- Biomarker rows rendered here -->
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <button class="btn btn-secondary btn-sm" onclick="App.addBiomarkerRow()">&#43; Tambah Biomarker</button>
+              <button class="btn btn-primary btn-sm" onclick="App.submitBiomarkerResults()">&#10003; Simpan &amp; Kirim ke CDS</button>
+            </div>
+            <div id="labBiomarkerStatus" style="font-size:0.8rem; text-align:center;"></div>
+          </div>
+
+          <!-- File Upload Panel -->
+          <div class="card" style="margin-bottom: 1rem;">
+            <div class="card-header">
+              <h2 class="card-title">&#128229; Upload File Hasil Lab</h2>
+              <span class="badge badge-fhir">JSON / CSV</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom:0.75rem;">
+              Upload file hasil analisis dari instrumen lab (format JSON atau CSV).
+              <a href="sample_labs.json" download style="color: var(--primary);">Unduh contoh format JSON</a>
+            </p>
+            <div id="labDropzoneArea" class="dropzone" style="padding: 1.25rem; min-height: auto;">
+              <div style="font-size: 1.75rem; margin-bottom: 0.35rem;">&#128196;</div>
+              <h3 style="font-size: 0.95rem; margin-bottom:0.5rem;">Drag &amp; Drop file di sini</h3>
+              <input type="file" id="labFileInput" style="display: none;" accept=".json,.csv">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); document.getElementById('labFileInput').click();">
+                Browse File...
+              </button>
+              <div id="labUploadStatusMessage" style="margin-top: 0.5rem; font-size: 0.78rem;"></div>
+            </div>
+          </div>
+
+          <!-- QC Checklist -->
+          <div class="card">
+            <div class="card-header">
+              <h2 class="card-title">&#9989; QC Checklist Pra-Analisis</h2>
+              <span class="badge badge-moderate">Lab Quality Control</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-muted); margin-bottom: 0.75rem;">
+              Konfirmasi pemeriksaan kualitas sebelum hasil diteruskan ke dokter.
+            </p>
+            <div id="labQcChecklist">
+              <!-- Rendered dynamically -->
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="App.submitQcChecklist()" style="width:100%; margin-top: 0.75rem;">
+              &#10003; Konfirmasi QC &amp; Selesaikan Sampel
+            </button>
+            <div id="labQcStatus" style="font-size:0.8rem; text-align:center; margin-top: 0.5rem;"></div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 1: INTAKE & INGESTION -->
+    <section id="tab-intake" class="tab-pane active">
+      <div class="grid-2">
+        
+        <!-- Left: Genomic File Ingestion -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">&#128229; Genomic Ingestion Engine</h2>
+            <span class="badge badge-fhir">VCF 4.2 | 23andMe | AncestryDNA</span>
+          </div>
+          
+          <div id="dropzoneArea" class="dropzone">
+            <div class="dropzone-icon">&#129516;</div>
+            <h3>Drag & Drop Genomic File Here</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0 1rem 0;">
+              Supports standard <code>.vcf</code> files, 23andMe/Ancestry tab-separated text files, or exported JSON sessions.
+            </p>
+            <input type="file" id="genomicFileInput" style="display: none;" accept=".vcf,.txt,.tsv,.json">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); document.getElementById('genomicFileInput').click();">
+              Browse Files...
+            </button>
+            <div id="uploadStatusMessage" style="margin-top: 0.75rem; font-size: 0.85rem;"></div>
+          </div>
+
+          <div style="margin-top: 1.5rem;">
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Currently Analyzed Genomic Variants</h3>
+            <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
+              <table class="clinical-table">
+                <thead>
+                  <tr>
+                    <th>Gene</th>
+                    <th>Variant</th>
+                    <th>rsID</th>
+                    <th>Genotype</th>
+                    <th>Functional Impact</th>
+                    <th>Evidence</th>
+                  </tr>
+                </thead>
+                <tbody id="intakeGenotypesTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Clinical Laboratory Biomarkers & Vitals -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">&#129656; Phenotypic & Lab Biomarkers</h2>
+            <span class="badge badge-optimal">Real-time Concordance</span>
+          </div>
+
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+            Biomarkers evaluate whether genetic predispositions are actively expressing clinical pathology (e.g. elevated homocysteine with MTHFR, ferritin with HFE).
+          </p>
+
+          <div id="labDropzoneArea" class="dropzone" style="margin-bottom: 1rem; padding: 1rem; min-height: auto;">
+            <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#129529;</div>
+            <h3 style="font-size: 1rem;">Upload Lab Results (JSON/CSV)</h3>
+            <input type="file" id="labFileInput" style="display: none;" accept=".json,.csv">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); document.getElementById('labFileInput').click();" style="margin-top: 0.5rem;">
+              Browse Labs...
+            </button>
+            <div id="labUploadStatusMessage" style="margin-top: 0.5rem; font-size: 0.75rem;"></div>
+          </div>
+
+          <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
+            <table class="clinical-table">
+              <thead>
+                <tr>
+                  <th>Biomarker</th>
+                  <th>Value</th>
+                  <th>Reference</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="intakeBiomarkersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: METABOLIC RISK MATRIX -->
+    <section id="tab-risk" class="tab-pane">
+      <div class="grid-2">
+        <!-- Left: Interactive SVG Radar Chart -->
+        <div class="card">
+          <div class="card-header">
+            <h2 class="card-title">&#128394; Polygenic Metabolic Domain Profile</h2>
+            <span class="badge badge-fhir">Normalized 0-100% Risk</span>
+          </div>
+          <div id="radarChartContainer" style="display: flex; justify-content: center; align-items: center; min-height: 380px;"></div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 0.5rem;">
+            Aggregates genetic variant weights and clinical evidence tiers across 5 major metabolic domains.
+          </p>
+        </div>
+
+        <!-- Right: Domain Score Breakdown -->
+        <div>
+          <div id="domainCardsContainer"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: PRECISION NUTRITION RX -->
+    <section id="tab-nutrition" class="tab-pane">
+      
+      <!-- Macronutrient Target Rx -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">&#9878; Precision Macronutrient & Caloric Target Distribution</h2>
+          <span class="badge badge-optimal">Genotype & Phenotype Adjusted</span>
+        </div>
+        <div id="macroTargetContainer" class="macro-grid"></div>
+      </div>
+
+      <!-- Precision Supplement Formulary -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">&#128138; Precision Micronutrient & Supplement Formulary</h2>
+          <span class="badge badge-fhir">Targeted Active Forms & Dosages</span>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+          Avoids synthetic forms with poor genetic conversion (e.g. synthetic folic acid in MTHFR; carotenoids in BCMO1; plant ALA in FADS1).
+        </p>
+        <div class="table-responsive">
+          <table class="clinical-table">
+            <thead>
+              <tr>
+                <th>Nutrient / Goal</th>
+                <th>Prescribed Active Chemical Form</th>
+                <th>Dosage & Timing</th>
+                <th>Clinical Mechanism & Evidence</th>
+                <th>Monitoring Protocol</th>
+              </tr>
+            </thead>
+            <tbody id="supplementFormularyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Food-First Strategy -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">&#129367; "Food-First" Dietary Protocol</h2>
+          <span class="badge badge-optimal">Tailored Foods</span>
+        </div>
+        <div class="food-columns">
+          <div class="food-col prioritize-col">
+            <h4>Foods to Prioritize</h4>
+            <ul id="foodPrioritizeList" class="food-list"></ul>
+          </div>
+          <div class="food-col avoid-col">
+            <h4>Foods to Minimize / Avoid</h4>
+            <ul id="foodAvoidList" class="food-list"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: SAFETY & DRUG INTERACTIONS -->
+    <section id="tab-safety" class="tab-pane">
+      <div id="safetyAlertsContainer"></div>
+    </section>
+
+    <!-- TAB 5: CLINICAL DOCUMENTATION -->
+    <section id="tab-reports" class="tab-pane">
+      <div class="no-print" style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem; justify-content: space-between; align-items: center; flex-wrap: wrap;">
+        <div id="reportViewToggles" style="display: flex; gap: 0.5rem;">
+          <button id="btnViewPatientPlan" class="btn btn-primary btn-sm" onclick="App.toggleReportView('patient')">
+            <span>&#128100;</span> Patient Care Plan View
+          </button>
+          <button id="btnViewSoap" class="btn btn-secondary btn-sm" onclick="App.toggleReportView('soap')">
+            <span>&#128221;</span> Clinician SOAP View
+          </button>
+        </div>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <a href="Arthur_Pendelton_Nutrigenomic_Patient_Report.docx" download class="btn btn-secondary btn-sm" title="Download native Microsoft Word version of this report">
+            <span>&#128196;</span> Download .docx
+          </a>
+          <a href="patient_report_sample.html" target="_blank" class="btn btn-secondary btn-sm" title="Open standalone printable patient report in a new tab">
+            <span>&#128471;</span> Standalone View
+          </a>
+          <button class="btn btn-success btn-sm" onclick="window.print()" title="Print or save current report to PDF">
+            <span>&#128438;</span> Print / Save PDF
+          </button>
+        </div>
+      </div>
+
+      <div id="patientCarePlanContainer"></div>
+      <div id="soapReportContainer" style="display: none;"></div>
+    </section>
+
+    <!-- TAB 6: HL7 FHIR INTEROPERABILITY -->
+    <section id="tab-fhir" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">&#9877; HL7 FHIR R4 Clinical Interoperability Export</h2>
+          <span class="badge badge-fhir">GenomicReport & NutritionOrder Bundle</span>
+        </div>
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+          Standards-compliant FHIR R4 Bundle containing <code>Patient</code>, <code>Observation</code> (genomic variants with HGVS and lab biomarkers with LOINC codes), <code>DiagnosticReport</code> (Genomics Reporting profile), and <code>NutritionOrder</code> (oral diet, macronutrient targets, and dietary supplements with SNOMED CT coding).
+        </p>
+        <div id="fhirViewerContainer"></div>
+      </div>
+    </section>
+
+    <!-- TAB 7: EVIDENCE KNOWLEDGE BASE -->
+    <section id="tab-kb" class="tab-pane">
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">&#128218; Curated Clinical Nutrigenomics Knowledge Base</h2>
+          <span class="badge badge-optimal">Tiers A, B & C</span>
+        </div>
+        
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <input type="text" id="kbSearchInput" class="form-control" placeholder="Search by gene (e.g. MTHFR, APOE, VDR), rsID, metabolic domain, or clinical topic...">
+        </div>
+
+        <div class="table-responsive">
+          <table class="clinical-table">
+            <thead>
+              <tr>
+                <th>Gene</th>
+                <th>rsID</th>
+                <th>Variant Name</th>
+                <th>Genomic Locus</th>
+                <th>Metabolic Domain</th>
+                <th>Evidence Tier</th>
+                <th>Biological Summary & Citations</th>
+              </tr>
+            </thead>
+            <tbody id="knowledgeBaseTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Load Modules -->
+  <script src="js/data/knowledge_base.js"></script>
+  <script src="js/data/drug_interactions.js"></script>
+  <script src="js/data/sample_patients.js"></script>
+  <script src="js/engine/parsers.js"></script>
+  <script src="js/engine/concordance.js"></script>
+  <script src="js/engine/rule_engine.js"></script>
+  <script src="js/engine/fhir_exporter.js"></script>
+  <script src="js/ui/radar_chart.js"></script>
+  <script src="js/ui/report_view.js"></script>
+  <script src="js/api_client.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "biomarkers": {
+    "homocysteine": {
+      "value": 16.5,
+      "unit": "umol/L",
+      "reference": "< 9.0 umol/L",
+      "status": "Severely elevated"
+    },
+    "ferritin": {
+      "value": 120,
+      "unit": "ng/mL",
+      "reference": "30-300 ng/mL",
+      "status": "Normal"
+    },
+    "vitaminD": {
+      "value": 22,
+      "unit": "ng/mL",
+      "reference": "30-100 ng/mL",
+      "status": "Deficient"
+    },
+    "ldlCholesterol": {
+      "value": 145,
+      "unit": "mg/dL",
+      "reference": "< 100 mg/dL",
+      "status": "Elevated"
+    }
+  }
+}

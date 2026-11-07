@@ -15,6 +15,9 @@ const App = {
   ],
 
   init: function() {
+    if (typeof I18N !== 'undefined') {
+      I18N.updateDOM();
+    }
     this.populatePatientSelector();
     this.bindEvents();
     
@@ -288,7 +291,8 @@ const App = {
       if (vitalsBar) vitalsBar.style.display = "none";
       
       const reportsTabBtn = document.querySelector('.tab-btn[data-tab="tab-reports"]');
-      if (reportsTabBtn) reportsTabBtn.innerHTML = `<span>👤</span> My Health Report`;
+      const t = (k) => (typeof I18N !== 'undefined' ? I18N.t(k) : k);
+      if (reportsTabBtn) reportsTabBtn.innerHTML = `<span>👤</span> ${t('tabPatientReport')}`;
 
       this.toggleReportView("patient");
     } else {
@@ -297,7 +301,8 @@ const App = {
       if (vitalsBar) vitalsBar.style.display = "flex";
 
       const reportsTabBtn = document.querySelector('.tab-btn[data-tab="tab-reports"]');
-      if (reportsTabBtn) reportsTabBtn.innerHTML = `<span>📝</span> Clinical Documentation (SOAP)`;
+      const t = (k) => (typeof I18N !== 'undefined' ? I18N.t(k) : k);
+      if (reportsTabBtn) reportsTabBtn.innerHTML = `<span>📝</span> ${t('tabReports')}`;
     }
 
     // Reset view based on role
@@ -427,29 +432,32 @@ const App = {
     const bar = document.getElementById("patientVitalsBar");
     if (!bar || !p) return;
 
+    const t = (k) => (typeof I18N !== 'undefined' ? I18N.t(k) : k);
+    const ageLabel = typeof I18N !== 'undefined' && I18N.currentLang === 'id' ? 'th' : 'y.o.';
+
     bar.innerHTML = `
       <div class="pt-demographics">
         <div class="pt-avatar">${p.name.charAt(0)}</div>
         <div class="pt-name-id">
           <h3>${p.name}</h3>
-          <span>ID: ${p.id} | Age: ${p.age} y.o. | ${p.gender.toUpperCase()}</span>
+          <span>ID: ${p.id} | ${t('vitalAgeGender')}: ${p.age} ${ageLabel} | ${p.gender.toUpperCase()}</span>
         </div>
       </div>
       <div class="pt-vitals-strip">
         <div class="vital-metric">
-          <span class="metric-name">BMI</span>
+          <span class="metric-name">${t('vitalBmi')}</span>
           <span class="metric-value">${p.bmi} kg/m²</span>
         </div>
         <div class="vital-metric">
-          <span class="metric-name">Blood Pressure</span>
+          <span class="metric-name">${t('vitalBp')}</span>
           <span class="metric-value">${p.bloodPressure || 'N/A'}</span>
         </div>
         <div class="vital-metric">
-          <span class="metric-name">Diet Baseline</span>
+          <span class="metric-name">${t('vitalDiet')}</span>
           <span class="metric-value">${p.dietPattern || 'Omnivore'}</span>
         </div>
         <div class="vital-metric">
-          <span class="metric-name">Overall Status</span>
+          <span class="metric-name">${t('vitalStatus')}</span>
           <span class="metric-value"><span class="badge ${this.currentEvaluation.overallRiskStatus.class.replace('risk-', 'badge-')}">${this.currentEvaluation.overallRiskStatus.level}</span></span>
         </div>
       </div>
@@ -550,25 +558,26 @@ const App = {
 
     // Macronutrient cards
     const macroContainer = document.getElementById("macroTargetContainer");
+    const t = (k) => (typeof I18N !== 'undefined' ? I18N.t(k) : k);
     if (macroContainer) {
       macroContainer.innerHTML = `
         <div class="macro-card">
-          <span class="macro-label">Prescribed Energy</span>
+          <span class="macro-label">${t('prescribedEnergy')}</span>
           <span class="macro-val">${macro.dailyCalories} kcal/d</span>
-          <span class="macro-sub">Estimated BMR: ~${macro.bmr} kcal/d</span>
+          <span class="macro-sub">${t('estBmr')} ~${macro.bmr} kcal/d</span>
         </div>
         <div class="macro-card">
-          <span class="macro-label">Carbohydrate</span>
+          <span class="macro-label">${t('carbohydrate')}</span>
           <span class="macro-val">${macro.distribution ? macro.distribution.carbohydrate.grams : 0}g (${macro.distribution ? macro.distribution.carbohydrate.percentage : 0}%)</span>
           <span class="macro-sub">${macro.distribution ? macro.distribution.carbohydrate.focus : ''}</span>
         </div>
         <div class="macro-card">
-          <span class="macro-label">Protein Target</span>
+          <span class="macro-label">${t('proteinTarget')}</span>
           <span class="macro-val">${macro.distribution ? macro.distribution.protein.grams : 0}g (${macro.distribution ? macro.distribution.protein.percentage : 0}%)</span>
           <span class="macro-sub">${macro.distribution ? macro.distribution.protein.focus : ''}</span>
         </div>
         <div class="macro-card">
-          <span class="macro-label">Fat & Saturated Ceiling</span>
+          <span class="macro-label">${t('fatCeiling')}</span>
           <span class="macro-val">${macro.distribution ? macro.distribution.fat.grams : 0}g (${macro.distribution ? macro.distribution.fat.percentage : 0}%)</span>
           <span class="macro-sub">${macro.distribution ? macro.distribution.saturatedFatCeiling : ''}</span>
         </div>

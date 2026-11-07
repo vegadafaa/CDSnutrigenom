@@ -32,19 +32,19 @@
       <div id="loginError" style="display:none; padding:0.75rem 1rem; border-radius:8px; font-size:0.82rem; margin-bottom:0.75rem; line-height:1.5;"></div>
 
       <button id="btnLogin" class="btn btn-primary" style="width:100%; margin-bottom: 1rem;" onclick="App.handleLogin()">
-        &#128274; Login dengan Backend
+        &#128274; <span data-i18n="loginWithBackend">Login dengan Backend</span>
       </button>
 
       <!-- Divider -->
       <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:1rem;">
         <hr style="flex:1; border-color:var(--border-color);">
-        <span style="font-size:0.75rem; color:var(--text-muted);">atau tanpa server</span>
+        <span style="font-size:0.75rem; color:var(--text-muted);" data-i18n="orWithoutServer">atau tanpa server</span>
         <hr style="flex:1; border-color:var(--border-color);">
       </div>
 
       <!-- Demo Mode -->
       <div class="form-group" style="margin-bottom:0.75rem;">
-        <label for="userRole" style="font-size:0.82rem; color:var(--text-muted);">Pilih Role Demo:</label>
+        <label for="userRole" style="font-size:0.82rem; color:var(--text-muted);" data-i18n="selectDemoRole">Pilih Role Demo:</label>
         <select id="userRole" class="form-control">
           <option value="physician">&#128104;&#8205;&#9877;&#65039; Physician / Clinician</option>
           <option value="lab">&#128300; Laboratory User</option>
@@ -52,7 +52,7 @@
         </select>
       </div>
       <button class="btn btn-secondary" style="width:100%;" onclick="App.loginDemoMode()">
-        &#128295; Masuk Demo Mode (Offline)
+        &#128295; <span data-i18n="enterDemoMode">Masuk Demo Mode (Offline)</span>
       </button>
     </div>
   </div>
@@ -63,18 +63,27 @@
       <div class="brand-icon">&#129516;</div>
       <div>
         <div class="brand-title">NutriGen-<span>CDS</span></div>
-        <div class="brand-subtitle">Clinical Decision Support for Evidence-Based Precision Nutrigenomics</div>
+        <div class="brand-subtitle" data-i18n="appSubtitle">Clinical Decision Support for Evidence-Based Precision Nutrigenomics</div>
       </div>
     </div>
 
-    <div style="display: flex; align-items: center; gap: 1rem;">
+    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+      <!-- Language Selector -->
+      <div style="display: flex; align-items: center; gap: 0.35rem; background: rgba(255,255,255,0.08); padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--border-color, #334155);">
+        <span style="font-size: 0.9rem;">🌐</span>
+        <select id="languageSelector" class="form-control" style="padding: 0.2rem 0.4rem; font-size: 0.8rem; height: auto; background: transparent; color: inherit; border: none; cursor: pointer;" onchange="I18N.setLanguage(this.value)">
+          <option value="en" style="color: #0f172a;">English (EN)</option>
+          <option value="id" style="color: #0f172a;">Bahasa Indonesia (ID)</option>
+        </select>
+      </div>
+
       <div class="header-patient-picker">
-        <label for="patientSelector">Select Patient Persona:</label>
+        <label for="patientSelector" data-i18n="selectPatient">Select Patient Persona:</label>
         <select id="patientSelector" class="select-patient"></select>
       </div>
 
       <button id="btnPrintReport" class="btn btn-secondary btn-sm" title="Print clinical consultation report">
-        <span>&#128438;</span> Print / PDF
+        <span>&#128438;</span> <span data-i18n="printPdf">Print / PDF</span>
       </button>
     </div>
   </header>
@@ -82,29 +91,29 @@
   <!-- Navigation Tabs -->
   <nav class="tabs-nav no-print" aria-label="Main Navigation">
     <button class="tab-btn active" data-tab="tab-intake">
-      <span>&#128100;</span> Intake & Ingestion
+      <span>&#128100;</span> <span data-i18n="tabIntake">Intake & Ingestion</span>
     </button>
     <button class="tab-btn" data-tab="tab-lab" style="display: none;" id="navLabTab">
-      <span>&#129529;</span> Lab Tracking & Workflow
+      <span>&#129529;</span> <span data-i18n="tabLab">Lab Tracking & Workflow</span>
     </button>
     <button class="tab-btn" data-tab="tab-risk">
-      <span>&#127919;</span> Metabolic Risk Matrix
+      <span>&#127919;</span> <span data-i18n="tabRisk">Metabolic Risk Matrix</span>
     </button>
     <button class="tab-btn" data-tab="tab-nutrition">
-      <span>&#127822;</span> Precision Nutrition Rx
+      <span>&#127822;</span> <span data-i18n="tabNutrition">Precision Nutrition Rx</span>
     </button>
     <button class="tab-btn" data-tab="tab-safety">
-      <span>&#9888;</span> Safety & Depletions
+      <span>&#9888;</span> <span data-i18n="tabSafety">Safety & Depletions</span>
       <span id="safetyTabBadge" class="tab-count badge-high" style="display: none;">0</span>
     </button>
     <button class="tab-btn" data-tab="tab-reports">
-      <span>&#128221;</span> Clinical Documentation (SOAP)
+      <span>&#128221;</span> <span data-i18n="tabReports">Clinical Documentation (SOAP)</span>
     </button>
     <button class="tab-btn" data-tab="tab-fhir">
-      <span>&#9877;</span> HL7 FHIR Interoperability
+      <span>&#9877;</span> <span data-i18n="tabFhir">HL7 FHIR Interoperability</span>
     </button>
     <button class="tab-btn" data-tab="tab-kb">
-      <span>&#128218;</span> Evidence Knowledge Base
+      <span>&#128218;</span> <span data-i18n="tabKb">Evidence Knowledge Base</span>
     </button>
   </nav>
 
@@ -272,35 +281,35 @@
         <!-- Left: Genomic File Ingestion -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">&#128229; Genomic Ingestion Engine</h2>
+            <h2 class="card-title">&#128229; <span data-i18n="genomicIngestionTitle">Genomic Ingestion Engine</span></h2>
             <span class="badge badge-fhir">VCF 4.2 | 23andMe | AncestryDNA</span>
           </div>
           
           <div id="dropzoneArea" class="dropzone">
             <div class="dropzone-icon">&#129516;</div>
-            <h3>Drag & Drop Genomic File Here</h3>
-            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0 1rem 0;">
+            <h3 data-i18n="dropzoneTitle">Drag & Drop Genomic File Here</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 0 1rem 0;" data-i18n="dropzoneDesc">
               Supports standard <code>.vcf</code> files, 23andMe/Ancestry tab-separated text files, or exported JSON sessions.
             </p>
             <input type="file" id="genomicFileInput" style="display: none;" accept=".vcf,.txt,.tsv,.json">
             <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); document.getElementById('genomicFileInput').click();">
-              Browse Files...
+              <span data-i18n="browseFiles">Browse Files...</span>
             </button>
             <div id="uploadStatusMessage" style="margin-top: 0.75rem; font-size: 0.85rem;"></div>
           </div>
 
           <div style="margin-top: 1.5rem;">
-            <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-secondary);">Currently Analyzed Genomic Variants</h3>
+            <h3 style="font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-secondary);" data-i18n="analyzedVariantsTitle">Currently Analyzed Genomic Variants</h3>
             <div class="table-responsive" style="max-height: 340px; overflow-y: auto;">
               <table class="clinical-table">
                 <thead>
                   <tr>
-                    <th>Gene</th>
-                    <th>Variant</th>
-                    <th>rsID</th>
-                    <th>Genotype</th>
-                    <th>Functional Impact</th>
-                    <th>Evidence</th>
+                    <th data-i18n="thGene">Gene</th>
+                    <th data-i18n="thVariant">Variant</th>
+                    <th data-i18n="thRsid">rsID</th>
+                    <th data-i18n="thGenotype">Genotype</th>
+                    <th data-i18n="thImpact">Functional Impact</th>
+                    <th data-i18n="thEvidence">Evidence</th>
                   </tr>
                 </thead>
                 <tbody id="intakeGenotypesTableBody"></tbody>
@@ -312,20 +321,20 @@
         <!-- Right: Clinical Laboratory Biomarkers & Vitals -->
         <div class="card">
           <div class="card-header">
-            <h2 class="card-title">&#129656; Phenotypic & Lab Biomarkers</h2>
+            <h2 class="card-title">&#129656; <span data-i18n="phenotypicBiomarkersTitle">Phenotypic & Lab Biomarkers</span></h2>
             <span class="badge badge-optimal">Real-time Concordance</span>
           </div>
 
-          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;" data-i18n="phenotypicBiomarkersDesc">
             Biomarkers evaluate whether genetic predispositions are actively expressing clinical pathology (e.g. elevated homocysteine with MTHFR, ferritin with HFE).
           </p>
 
           <div id="labDropzoneArea" class="dropzone" style="margin-bottom: 1rem; padding: 1rem; min-height: auto;">
             <div style="font-size: 1.5rem; margin-bottom: 0.5rem;">&#129529;</div>
-            <h3 style="font-size: 1rem;">Upload Lab Results (JSON/CSV)</h3>
+            <h3 style="font-size: 1rem;" data-i18n="uploadLabTitle">Upload Lab Results (JSON/CSV)</h3>
             <input type="file" id="labFileInput" style="display: none;" accept=".json,.csv">
             <button type="button" class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); document.getElementById('labFileInput').click();" style="margin-top: 0.5rem;">
-              Browse Labs...
+              <span data-i18n="browseLabs">Browse Labs...</span>
             </button>
             <div id="labUploadStatusMessage" style="margin-top: 0.5rem; font-size: 0.75rem;"></div>
           </div>
@@ -334,10 +343,10 @@
             <table class="clinical-table">
               <thead>
                 <tr>
-                  <th>Biomarker</th>
-                  <th>Value</th>
-                  <th>Reference</th>
-                  <th>Status</th>
+                  <th data-i18n="thBiomarker">Biomarker</th>
+                  <th data-i18n="thValue">Value</th>
+                  <th data-i18n="thReference">Reference</th>
+                  <th data-i18n="thStatus">Status</th>
                 </tr>
               </thead>
               <tbody id="intakeBiomarkersTableBody"></tbody>
@@ -384,21 +393,21 @@
       <!-- Precision Supplement Formulary -->
       <div class="card">
         <div class="card-header">
-          <h2 class="card-title">&#128138; Precision Micronutrient & Supplement Formulary</h2>
-          <span class="badge badge-fhir">Targeted Active Forms & Dosages</span>
+          <h2 class="card-title">&#128138; <span data-i18n="supplementTitle">Precision Micronutrient & Supplement Formulary</span></h2>
+          <span class="badge badge-fhir" data-i18n="supplementBadge">Targeted Active Forms & Dosages</span>
         </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;" data-i18n="supplementDesc">
           Avoids synthetic forms with poor genetic conversion (e.g. synthetic folic acid in MTHFR; carotenoids in BCMO1; plant ALA in FADS1).
         </p>
         <div class="table-responsive">
           <table class="clinical-table">
             <thead>
               <tr>
-                <th>Nutrient / Goal</th>
-                <th>Prescribed Active Chemical Form</th>
-                <th>Dosage & Timing</th>
-                <th>Clinical Mechanism & Evidence</th>
-                <th>Monitoring Protocol</th>
+                <th data-i18n="thNutrientGoal">Nutrient / Goal</th>
+                <th data-i18n="thActiveForm">Prescribed Active Chemical Form</th>
+                <th data-i18n="thDosageTiming">Dosage & Timing</th>
+                <th data-i18n="thMechanismEvidence">Clinical Mechanism & Evidence</th>
+                <th data-i18n="thMonitoringProtocol">Monitoring Protocol</th>
               </tr>
             </thead>
             <tbody id="supplementFormularyTableBody"></tbody>
@@ -409,16 +418,16 @@
       <!-- Food-First Strategy -->
       <div class="card">
         <div class="card-header">
-          <h2 class="card-title">&#129367; "Food-First" Dietary Protocol</h2>
-          <span class="badge badge-optimal">Tailored Foods</span>
+          <h2 class="card-title">&#129367; <span data-i18n="foodStrategyTitle">"Food-First" Dietary Protocol</span></h2>
+          <span class="badge badge-optimal" data-i18n="foodStrategyBadge">Tailored Foods</span>
         </div>
         <div class="food-columns">
           <div class="food-col prioritize-col">
-            <h4>Foods to Prioritize</h4>
+            <h4 data-i18n="foodsToPrioritize">Foods to Prioritize</h4>
             <ul id="foodPrioritizeList" class="food-list"></ul>
           </div>
           <div class="food-col avoid-col">
-            <h4>Foods to Minimize / Avoid</h4>
+            <h4 data-i18n="foodsToAvoid">Foods to Minimize / Avoid</h4>
             <ul id="foodAvoidList" class="food-list"></ul>
           </div>
         </div>
@@ -435,21 +444,21 @@
       <div class="no-print" style="margin-bottom: 1.5rem; display: flex; gap: 0.75rem; justify-content: space-between; align-items: center; flex-wrap: wrap;">
         <div id="reportViewToggles" style="display: flex; gap: 0.5rem;">
           <button id="btnViewPatientPlan" class="btn btn-primary btn-sm" onclick="App.toggleReportView('patient')">
-            <span>&#128100;</span> Patient Care Plan View
+            <span>&#128100;</span> <span data-i18n="patientCarePlanBtn">Patient Care Plan View</span>
           </button>
           <button id="btnViewSoap" class="btn btn-secondary btn-sm" onclick="App.toggleReportView('soap')">
-            <span>&#128221;</span> Clinician SOAP View
+            <span>&#128221;</span> <span data-i18n="clinicianSoapBtn">Clinician SOAP View</span>
           </button>
         </div>
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
           <a href="Arthur_Pendelton_Nutrigenomic_Patient_Report.docx" download class="btn btn-secondary btn-sm" title="Download native Microsoft Word version of this report">
-            <span>&#128196;</span> Download .docx
+            <span>&#128196;</span> <span data-i18n="downloadDocx">Download .docx</span>
           </a>
           <a href="patient_report_sample.html" target="_blank" class="btn btn-secondary btn-sm" title="Open standalone printable patient report in a new tab">
-            <span>&#128471;</span> Standalone View
+            <span>&#128471;</span> <span data-i18n="standaloneView">Standalone View</span>
           </a>
           <button class="btn btn-success btn-sm" onclick="window.print()" title="Print or save current report to PDF">
-            <span>&#128438;</span> Print / Save PDF
+            <span>&#128438;</span> <span data-i18n="printSavePdf">Print / Save PDF</span>
           </button>
         </div>
       </div>
@@ -462,10 +471,10 @@
     <section id="tab-fhir" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h2 class="card-title">&#9877; HL7 FHIR R4 Clinical Interoperability Export</h2>
-          <span class="badge badge-fhir">GenomicReport & NutritionOrder Bundle</span>
+          <h2 class="card-title">&#9877; <span data-i18n="fhirTitle">HL7 FHIR R4 Clinical Interoperability Export</span></h2>
+          <span class="badge badge-fhir" data-i18n="fhirBadge">GenomicReport & NutritionOrder Bundle</span>
         </div>
-        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;">
+        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem;" data-i18n="fhirDesc">
           Standards-compliant FHIR R4 Bundle containing <code>Patient</code>, <code>Observation</code> (genomic variants with HGVS and lab biomarkers with LOINC codes), <code>DiagnosticReport</code> (Genomics Reporting profile), and <code>NutritionOrder</code> (oral diet, macronutrient targets, and dietary supplements with SNOMED CT coding).
         </p>
         <div id="fhirViewerContainer"></div>
@@ -476,25 +485,25 @@
     <section id="tab-kb" class="tab-pane">
       <div class="card">
         <div class="card-header">
-          <h2 class="card-title">&#128218; Curated Clinical Nutrigenomics Knowledge Base</h2>
+          <h2 class="card-title">&#128218; <span data-i18n="kbTitle">Curated Clinical Nutrigenomics Knowledge Base</span></h2>
           <span class="badge badge-optimal">Tiers A, B & C</span>
         </div>
         
         <div class="form-group" style="margin-bottom: 1.25rem;">
-          <input type="text" id="kbSearchInput" class="form-control" placeholder="Search by gene (e.g. MTHFR, APOE, VDR), rsID, metabolic domain, or clinical topic...">
+          <input type="text" id="kbSearchInput" class="form-control" placeholder="Search by gene (e.g. MTHFR, APOE, VDR), rsID, metabolic domain, or clinical topic..." data-i18n-placeholder="kbSearchPlaceholder">
         </div>
 
         <div class="table-responsive">
           <table class="clinical-table">
             <thead>
               <tr>
-                <th>Gene</th>
-                <th>rsID</th>
-                <th>Variant Name</th>
-                <th>Genomic Locus</th>
-                <th>Metabolic Domain</th>
-                <th>Evidence Tier</th>
-                <th>Biological Summary & Citations</th>
+                <th data-i18n="thGene">Gene</th>
+                <th data-i18n="thRsid">rsID</th>
+                <th data-i18n="thVariantName">Variant Name</th>
+                <th data-i18n="thLocus">Genomic Locus</th>
+                <th data-i18n="thDomain">Metabolic Domain</th>
+                <th data-i18n="thEvidence">Evidence Tier</th>
+                <th data-i18n="thSummaryCitations">Biological Summary & Citations</th>
               </tr>
             </thead>
             <tbody id="knowledgeBaseTableBody"></tbody>
@@ -506,6 +515,7 @@
   </main>
 
   <!-- Load Modules -->
+  <script src="js/data/i18n.js"></script>
   <script src="js/data/knowledge_base.js"></script>
   <script src="js/data/drug_interactions.js"></script>
   <script src="js/data/sample_patients.js"></script>
